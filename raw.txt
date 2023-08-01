@@ -1,0 +1,98 @@
+installation process for ubuntu os
+
+https://pkg.origin.jenkins.io/debian/
+
+sudo apt update && sudo apt upgrade && sudo apt install curl -y && curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+/usr/share/keyrings/jenkins-keyring.asc > /dev/null &&   echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+https://pkg.jenkins.io/debian binary/ | sudo tee \
+/etc/apt/sources.list.d/jenkins.list > /dev/null && sudo apt update &&sudo apt install openjdk-17-jdk -y && sudo apt install jenkins -y
+
+
+
+sudo wget http://20.98.219.152:8080/jnlpJars/agent.jar
+sudo mv agent.jar /opt
+sudo java -jar agent.jar -jnlpUrl http://20.98.219.152:8080/computer/java%2Dnode/jenkins-agent.jnlp -secret f303076db33dc4672ffad3470e681ec35c6bffaaebb52c1a1d837672c3b430de -workDir "/opt/build"
+
+sudo mkdir /opt/maven
+
+wget https://maven.apache.org/download.cgi
+
+sudo apt install maven
+
+/usr/share/maven/
+
+
+password issue 
+cd /var/lib/jenkins/config.xml
+in windows
+C:\Users\dhanush.l\.jenkins
+
+
+pipeline {
+    agent any
+
+    tools {
+        maven "maven_home"
+        jdk "java_home"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                dir("/var/lib/jenkins/workspace/New_demo/my-app") {
+                sh 'mvn -B -DskipTests clean package'
+                }
+            
+            }
+        }
+     }
+    post {
+       always {
+          junit(
+        allowEmptyResults: true,
+        testResults: '*/test-reports/.xml'
+      )
+      }
+   } 
+}
+
+
+
+In the Jenkins web interface, go to "Manage Jenkins" > "Manage Nodes and Clouds."
+Click on "New Node" to create a new node configuration.
+Provide a name for the node (e.g., "MySlaveNode").
+Choose the "Permanent Agent" option and click on "OK."
+On the next page, you'll see the "Launch method" options. Choose "Launch agent via Java Web Start."
+Click on "Generate" to generate the agent command.
+Copy the generated command.
+
+
+git_home
+maven_home
+java_home
+
+pipeline {
+    agent any
+
+    tools {
+        maven "maven_home"
+        jdk "java_home"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                // Checkout the source code from the Git repository
+                git url: 'https://github.com/dhanush-dev01/java-jenkins.git', branch: 'main'
+
+                // Change the directory to the workspace for the specific project
+                dir("/var/lib/jenkins/workspace/New_demo/my-app") {
+                    sh 'mvn -B -DskipTests clean package'
+                }
+            }
+        }
+    }
+}
+
+
+
